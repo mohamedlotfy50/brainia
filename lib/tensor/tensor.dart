@@ -211,6 +211,14 @@ class Tensor<T extends num> {
     }
   }
 
+  Tensor add(dynamic other) {
+    return this + other;
+  }
+
+  Tensor sub(dynamic other) {
+    return this + other;
+  }
+
   T max() {
     T max;
     for (var i = 0; i < size; i++) {
