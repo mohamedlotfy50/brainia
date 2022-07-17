@@ -82,22 +82,26 @@ class TensorHelper<T> {
 
   static List createFromShape<T>(List<int> datashape,
       {T data, double Function() onGenerated}) {
-    var last = datashape.last;
-    List<T> dim;
+    var last = datashape.removeLast();
+    dynamic dim;
     if (data != null || onGenerated != null) {
       dim = List<T>.generate(last, (index) => data ?? onGenerated());
     } else {
       dim = List<T>.generate(last, (index) => null);
     }
-    var opList = [];
+    List<List> opList = [];
 
-    for (var i = datashape.length - 2; i >= 0; i--) {
+    for (var i = datashape.length - 1; i >= 0; i--) {
       for (var j = 0; j < datashape[i]; j++) {
-        opList.add(List.from(dim));
+        opList.add(List<T>.from(dim));
       }
-      dim = List.from(opList);
+      //TODO:fi error list is not int
+
+      dim = List<List<T>>.from(opList);
+
       opList = [];
     }
+    datashape.add(last);
     return dim;
   }
 
@@ -120,7 +124,7 @@ class TensorHelper<T> {
       for (var i = 0; i < dim; i++) {
         indeces.add(i);
         output.addAll(createIndicesTable(matrix[i], shape, indeces));
-        indeces = [];
+        indeces.removeLast();
       }
       shape.insert(0, dim);
     }

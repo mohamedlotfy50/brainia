@@ -141,8 +141,9 @@ class Tensor<T extends num> {
 
     if (other is! Tensor) {
       t = Tensor<T>(other);
+    } else {
+      t = other;
     }
-    t = other;
     if (op._isScalar || t._isScalar) {
       if (op._isScalar) {
         op = t.copy();
@@ -169,8 +170,9 @@ class Tensor<T extends num> {
 
     if (other is! Tensor) {
       t = Tensor<T>(other);
+    } else {
+      t = other;
     }
-    t = other;
     if (op._isScalar || t._isScalar) {
       if (op._isScalar) {
         op = t.copy();
