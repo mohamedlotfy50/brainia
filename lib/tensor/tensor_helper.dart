@@ -1,7 +1,49 @@
-class TensorHelper {
-  static List<int> getShape(List matrix) {
-    final temp = <int>[];
-    dynamic current = matrix;
+class TensorHelper<T> {
+  static int initSize(List<int> shape) {
+    var size = 1;
+
+    for (var dim in shape) {
+      size *= dim;
+    }
+
+    return size;
+  }
+
+  static int dataIndex<T>(
+    List<int> indices,
+    List<int> stride,
+  ) {
+    var index = 0;
+    for (var i = 0; i < indices.length; i++) {
+      index += indices[i] * stride[i];
+    }
+
+    return index;
+  }
+
+  List<int> defaultIndicesTable(int size) {
+    var temp = <int>[];
+    for (var i = 0; i < size; i++) {
+      temp.add(i);
+    }
+    return temp;
+  }
+
+  static List<int> initStride(List<int> shape) {
+    var temp = List<int>.generate(shape.length, (index) => null);
+    var currentStride = 1;
+    for (var i = shape.length - 1; i >= 0; i--) {
+      temp[i] = currentStride;
+      currentStride *= shape[i];
+    }
+
+    return temp;
+  }
+
+  static List<int> getShape(List data) {
+    var temp = <int>[];
+
+    dynamic current = data;
     while (current is List) {
       temp.add(current.length);
       current = current.first;
@@ -9,75 +51,80 @@ class TensorHelper {
     return temp;
   }
 
-  static int getSize(List<int> shape) {
-    var size = 1;
-    for (var dim in shape) {
-      size *= dim;
-    }
-    return size;
-  }
-
-  static List<int> getStride(List<int> shape) {
-    var stride = List<int>.filled(shape.length, 0);
-    var strideIndex = 1;
-    for (var i = shape.length - 1; i >= 0; i--) {
-      stride[i] = strideIndex;
-      strideIndex *= shape[i];
-    }
-    return stride;
-  }
-
-  static List<int> defauldIndicesTable(int size) {
-    var indices = <int>[];
-    for (var i = 0; i < size; i++) {
-      indices.add(i);
-    }
-    return indices;
-  }
-
-  static List<T> _getFlatList<T>(List matrix, List<int> shape) {
-    var result = <T>[];
-    if (shape.length == 1) {
-      for (var i = 0; i < shape.last; i++) {
-        result.add(matrix[i]);
-      }
-    } else if (shape.length == 2) {
-      for (var i = 0; i < shape.first; i++) {
-        for (var j = 0; j < shape.last; j++) {
-          result.add(matrix[i][j]);
-        }
+  static List<T> rowMajor<T>(
+    List data,
+    List<int> shape,
+  ) {
+    var temp = <T>[];
+    if (data.first is! List) {
+      for (var n in data) {
+        temp.add(n);
       }
     } else {
       var dim = shape.removeAt(0);
       for (var i = 0; i < dim; i++) {
-        result.addAll(_getFlatList(matrix[i], shape));
+        temp.addAll(rowMajor(data[i], shape));
       }
       shape.insert(0, dim);
     }
-    return result;
+    return temp;
   }
 
-  static List<T> flatListMatrix<T extends num>(
-      {List matrix, List<int> shape, List<int> stride, int size}) {
-    var flat = _getFlatList<T>(matrix, shape);
+  static void addAtIndex(List operationList, List<int> indices, dynamic data) {
+    dynamic current = operationList;
+    var last = indices.removeLast();
+    for (var d in indices) {
+      current = current[d];
+    }
+    current[last] = data;
+    indices.add(last);
+  }
 
-    var finalList = List<T>.filled(size, num.parse('0'));
-    var currentDim = 0;
-    var element = 0;
-    if (shape.length > 2) {
-      for (var i = 0; i < size; i++) {
-        if (currentDim == shape.first) {
-          currentDim = 0;
-          element += 1;
-        }
+  static List createFromShape<T>(List<int> datashape,
+      {T data, double Function() onGenerated}) {
+    var last = datashape.last;
+    List<T> dim;
+    if (data != null || onGenerated != null) {
+      dim = List<T>.generate(last, (index) => data ?? onGenerated());
+    } else {
+      dim = List<T>.generate(last, (index) => null);
+    }
+    var opList = [];
 
-        var currentIndex = currentDim * stride.first + element;
-        finalList[i] = flat[currentIndex];
-        currentDim += 1;
+    for (var i = datashape.length - 2; i >= 0; i--) {
+      for (var j = 0; j < datashape[i]; j++) {
+        opList.add(List.from(dim));
       }
-      return finalList;
+      dim = List.from(opList);
+      opList = [];
+    }
+    return dim;
+  }
+
+  static List<List<int>> createIndicesTable(
+      List matrix, List<int> shape, List<int> indeces) {
+    var output = <List<int>>[];
+
+    if (matrix.first is num) {
+      var temp = <List<int>>[];
+      for (var i = 0; i < matrix.length; i++) {
+        var ind = List<int>.from(indeces);
+        ind.add(i);
+
+        temp.add(ind);
+      }
+
+      return temp;
+    } else {
+      var dim = shape.removeAt(0);
+      for (var i = 0; i < dim; i++) {
+        indeces.add(i);
+        output.addAll(createIndicesTable(matrix[i], shape, indeces));
+        indeces = [];
+      }
+      shape.insert(0, dim);
     }
 
-    return flat;
+    return output;
   }
 }
