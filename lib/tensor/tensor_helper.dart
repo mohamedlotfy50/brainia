@@ -105,7 +105,7 @@ class TensorHelper<T> {
       List matrix, List<int> shape, List<int> indeces) {
     var output = <List<int>>[];
 
-    if (matrix.first is num) {
+    if (matrix.first is! List) {
       var temp = <List<int>>[];
       for (var i = 0; i < matrix.length; i++) {
         var ind = List<int>.from(indeces);
@@ -126,5 +126,18 @@ class TensorHelper<T> {
     }
 
     return output;
+  }
+
+  static bool shapeEquality(List<int> shape1, List<int> shape2) {
+    if (shape1.length == shape2.length) {
+      for (var i = 0; i < shape1.length; i++) {
+        if (shape1[i] != shape2[i]) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 }
