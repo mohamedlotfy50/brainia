@@ -80,30 +80,60 @@ class TensorHelper<T> {
     indices.add(last);
   }
 
-  static List createFromShape<T>(List<int> datashape,
+  // static List createFromShape<T>(List<int> datashape,
+  //     {dynamic data, double Function() onGenerated}) {
+  //   var last = datashape.removeLast();
+  //   dynamic dim;
+
+  //   dynamic opList = [];
+
+  //   for (var i = datashape.length - 1; i >= 0; i--) {
+  //     if (data != null || onGenerated != null) {
+  //       dim =
+  //           List.from(List<T>.generate(last, (index) => data ?? onGenerated()));
+  //     } else {
+  //       dim = List<T>.filled(last, null, growable: false);
+  //     }
+  //     for (var j = 0; j < datashape[i]; j++) {
+  //       opList.add([].add(dim));
+  //       print(dim);
+  //     }
+
+  //     dim = []..addAll(opList);
+  //     opList = List.from([]);
+  //   }
+
+  //   datashape.add(last);
+
+  //   return dim;
+  // }
+
+  static List createFromShape(List<int> datashape,
       {dynamic data, double Function() onGenerated}) {
-    var last = datashape.removeLast();
-    dynamic dim;
-    if (data != null || onGenerated != null) {
-      dim = List<T>.generate(last, (index) => data ?? onGenerated());
-    } else {
-      dim = List<T>.generate(last, (index) => null);
-    }
-    dynamic opList = [];
+    var finalList = [];
 
-    for (var i = datashape.length - 1; i >= 0; i--) {
-      for (var j = 0; j < datashape[i]; j++) {
-        opList.add(List<T>.from(dim));
+    if (datashape.length == 1) {
+      for (var i = 0; i < datashape.first; i++) {
+        dynamic val;
+        if (data != null || onGenerated != null) {
+          val = data ?? onGenerated();
+        }
+        finalList.add(val);
       }
-      //TODO:fi error list is not int
-      dim = List.from(opList);
-
-      opList = [];
+    } else {
+      var first = datashape.removeAt(0);
+      for (var i = 0; i < first; i++) {
+        finalList.add(
+          createFromShape(
+            datashape,
+            data: data,
+            onGenerated: onGenerated,
+          ),
+        );
+      }
+      datashape.insert(0, first);
     }
-
-    datashape.add(last);
-
-    return dim;
+    return finalList;
   }
 
   static List<List<int>> createIndicesTable(

@@ -125,13 +125,12 @@ class Tensor<T extends num> {
     var newSize = TensorHelper.initSize(newShape);
     if (newSize != _size || _isScalar) {
       throw Exception('exception');
-    } else if (data is List) {
-      var newEmptyShape = TensorHelper.createFromShape(newShape);
+    } else {
+      var newData = TensorHelper.createFromShape(newShape);
       _shape = newShape;
 
       _strides = TensorHelper.initStride(newShape);
-      _indicesTable =
-          TensorHelper.createIndicesTable(newEmptyShape, newShape, []);
+      _indicesTable = TensorHelper.createIndicesTable(newData, newShape, []);
     }
   }
 
