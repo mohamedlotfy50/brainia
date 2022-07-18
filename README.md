@@ -68,6 +68,23 @@ Outputs:
 11.0
 8.1
 ```
+**create zero or one or random tensor**
+```Dart
+  var zeros = Tensor.zeros([2, 2]);
+  var ones = Tensor.ones([2, 2, 2]);
+  var random = Tensor.rand([4]);
+
+  print(zeros.data);
+  print(ones.data);
+  print(random.data);
+```
+Outputs:
+```
+[[0, 0], [0, 0]]
+[[[1, 1], [1, 1]], [[1, 1], [1, 1]]]
+[0.3923595574833253, 0.8420612019302267, 0.40136824116167924, 0.5173859271994803]
+
+```
 
 ## License
 [Apache License 2.0](https://github.com/mohamedlotfy50/dartML/blob/main/LICENSE)
