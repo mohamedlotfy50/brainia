@@ -9,6 +9,22 @@ class TensorHelper<T> {
     return size;
   }
 
+  static bool isIndexExist(List<List<int>> indices, List<int> index) {
+    for (var ind in indices) {
+      var found = true;
+      for (var i = 0; i < ind.length; i++) {
+        if (ind[i] != index[i]) {
+          found = false;
+          break;
+        }
+      }
+      if (found) {
+        return found;
+      }
+    }
+    return false;
+  }
+
   static int dataIndex<T>(
     List<int> indices,
     List<int> stride,
@@ -155,8 +171,7 @@ class TensorHelper<T> {
 
     var total = 0;
     for (var i = indice.length - 1; i >= 0; i--) {
-      print(i);
-      total += strides[i] + indice[i];
+      total += strides[i] * indice[i];
     }
     return total;
   }

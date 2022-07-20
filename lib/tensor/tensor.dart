@@ -158,7 +158,7 @@ class Tensor<T extends num> {
     }
   }
 
-  Tensor<T> operator -(dynamic other) {
+  Tensor<T> operator -(Tensor other) {
     Tensor<T> t;
     Tensor opt;
 
@@ -174,6 +174,56 @@ class Tensor<T extends num> {
       for (var i = 0; i < opt.size; i++) {
         var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
         opt._tensor[index] = opt._tensor[index] -
+            t._tensor[TensorHelper.dataIndex(
+                t._indicesTable[i % t.strides.first], t._strides)];
+      }
+      return opt;
+    } else {
+      throw Exception('unbroadcastable shapes');
+    }
+  }
+
+  Tensor<T> operator *(Tensor other) {
+    Tensor<T> t;
+    Tensor opt;
+
+    if (other.size > _size) {
+      opt = other.copy();
+      t = this;
+    } else {
+      opt = copy();
+      t = other;
+    }
+    print(TensorHelper.isBroadcastable(t.shape, opt.shape));
+    if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
+      for (var i = 0; i < opt.size; i++) {
+        var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
+        opt._tensor[index] = opt._tensor[index] *
+            t._tensor[TensorHelper.dataIndex(
+                t._indicesTable[i % t.strides.first], t._strides)];
+      }
+      return opt;
+    } else {
+      throw Exception('unbroadcastable shapes');
+    }
+  }
+
+  Tensor<T> operator /(Tensor other) {
+    Tensor<T> t;
+    Tensor opt;
+
+    if (other.size > _size) {
+      opt = other.copy();
+      t = this;
+    } else {
+      opt = copy();
+      t = other;
+    }
+    print(TensorHelper.isBroadcastable(t.shape, opt.shape));
+    if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
+      for (var i = 0; i < opt.size; i++) {
+        var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
+        opt._tensor[index] = opt._tensor[index] /
             t._tensor[TensorHelper.dataIndex(
                 t._indicesTable[i % t.strides.first], t._strides)];
       }
@@ -204,14 +254,6 @@ class Tensor<T extends num> {
     }
   }
 
-  Tensor add(dynamic other) {
-    return this + other;
-  }
-
-  Tensor sub(dynamic other) {
-    return this + other;
-  }
-
   T max() {
     T max;
     for (var i = 0; i < size; i++) {
@@ -234,5 +276,17 @@ class Tensor<T extends num> {
       }
     }
     return min;
+  }
+
+  T getElemetAt(List<int> index) {
+    if (index.length == rank) {
+      if (TensorHelper.isIndexExist(_indicesTable, index)) {
+        return _tensor[TensorHelper.getDataIndex(index, _strides)];
+      } else {
+        throw Exception('not exist');
+      }
+    } else {
+      throw Exception('high rank');
+    }
   }
 }
