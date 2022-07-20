@@ -80,34 +80,6 @@ class TensorHelper<T> {
     indices.add(last);
   }
 
-  // static List createFromShape<T>(List<int> datashape,
-  //     {dynamic data, double Function() onGenerated}) {
-  //   var last = datashape.removeLast();
-  //   dynamic dim;
-
-  //   dynamic opList = [];
-
-  //   for (var i = datashape.length - 1; i >= 0; i--) {
-  //     if (data != null || onGenerated != null) {
-  //       dim =
-  //           List.from(List<T>.generate(last, (index) => data ?? onGenerated()));
-  //     } else {
-  //       dim = List<T>.filled(last, null, growable: false);
-  //     }
-  //     for (var j = 0; j < datashape[i]; j++) {
-  //       opList.add([].add(dim));
-  //       print(dim);
-  //     }
-
-  //     dim = []..addAll(opList);
-  //     opList = List.from([]);
-  //   }
-
-  //   datashape.add(last);
-
-  //   return dim;
-  // }
-
   static List createFromShape(List<int> datashape,
       {dynamic data, double Function() onGenerated}) {
     var finalList = [];
@@ -174,5 +146,44 @@ class TensorHelper<T> {
     } else {
       return false;
     }
+  }
+
+  static int getDataIndex(List<int> indice, List<int> strides) {
+    if (indice.length != strides.length) {
+      throw Exception('unexpected erro');
+    }
+
+    var total = 0;
+    for (var i = indice.length - 1; i >= 0; i--) {
+      print(i);
+      total += strides[i] + indice[i];
+    }
+    return total;
+  }
+
+  static bool isBroadcastable(List<int> shape1, List shape2) {
+    List<int> biggerLength;
+    List<int> smallerLength;
+    if (shape1.length > shape2.length) {
+      biggerLength = List.from(shape1, growable: false);
+      smallerLength = List.from(shape2);
+    } else {
+      biggerLength = List.from(shape2, growable: false);
+      smallerLength = List.from(shape1);
+    }
+    var diff = biggerLength.length - smallerLength.length;
+    for (var i = 0; i < diff; i++) {
+      smallerLength.insert(0, 1);
+    }
+
+    for (var i = 0; i < biggerLength.length; i++) {
+      if (biggerLength[i] != smallerLength[i]) {
+        if (biggerLength[i] != 1 && smallerLength[i] != 1) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }
