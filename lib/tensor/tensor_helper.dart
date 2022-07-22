@@ -1,3 +1,5 @@
+import 'package:dart_ml/tensor/tensor.dart';
+
 class TensorHelper<T> {
   static int initSize(List<int> shape) {
     var size = 1;
@@ -10,10 +12,10 @@ class TensorHelper<T> {
   }
 
   static bool isIndexExist(List<List<int>> indices, List<int> index) {
-    for (var ind in indices) {
+    for (var i = 0; i < indices.length; i++) {
       var found = true;
-      for (var i = 0; i < ind.length; i++) {
-        if (ind[i] != index[i]) {
+      for (var j = 0; j < indices[i].length; j++) {
+        if (indices[i][j] != indices[i][j]) {
           found = false;
           break;
         }
@@ -200,5 +202,60 @@ class TensorHelper<T> {
     }
 
     return true;
+  }
+
+  static Tensor vectorProduct(Tensor t1, Tensor t2) {
+    var total = 0;
+    for (var i = 0; i < t1.size; i++) {
+      total += t1.getElemetAt([i]) * t2.getElemetAt([i]);
+    }
+    return Tensor(total);
+  }
+
+  static Tensor matrixMultiplication(Tensor t1, Tensor t2) {
+    var output = [];
+
+    var newShape = [t1.shape.first, t2.shape.last];
+    var row = 0;
+    var column = 0;
+
+    while (row < t1.shape.first) {
+      var result = 0;
+
+      for (var j = 0; j < t1.shape.last; j++) {
+        var product = t1.getElemetAt([row, j]) * t2.getElemetAt([j, column]);
+
+        result += product;
+      }
+      column += 1;
+
+      if (column == t2.shape.last) {
+        column = 0;
+        row += 1;
+      }
+
+      output.add(result);
+    }
+    return Tensor(output)..reshape(newShape);
+  }
+
+  static Tensor<T> muliplyOnAxis<T extends num>(Tensor t1, Tensor t2) {
+    var output = [];
+    var newShape = List<int>.from(t1.shape);
+    newShape.removeLast();
+    var loops = newShape.first * newShape.last;
+    var start = 0;
+
+    for (var i = 0; i < loops; i++) {
+      var result = 0;
+
+      for (var j = 0; j < t2.size; j++) {
+        result += t1.getIndiceFromTable(start) * t2.getIndiceFromTable(j);
+        start += 1;
+      }
+      output.add(result);
+    }
+
+    return Tensor(output)..reshape(newShape);
   }
 }

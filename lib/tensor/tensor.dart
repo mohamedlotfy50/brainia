@@ -133,6 +133,23 @@ class Tensor<T extends num> {
     }
   }
 
+  factory Tensor.arrange(int index) {
+    var dataShape = [index];
+    var data = List.generate(index, (i) => i);
+    var dataSize = TensorHelper.initSize(dataShape);
+    var matrix = TensorHelper.rowMajor<T>(data, dataShape);
+    var dataStrides = TensorHelper.initStride(dataShape);
+    var indicesTable = TensorHelper.createIndicesTable(data, dataShape, []);
+
+    return Tensor._(
+      matrix,
+      dataShape,
+      dataSize,
+      dataStrides,
+      indicesTable,
+    );
+  }
+
   Tensor<T> operator +(Tensor other) {
     Tensor<T> t;
     Tensor opt;
@@ -280,13 +297,34 @@ class Tensor<T extends num> {
 
   T getElemetAt(List<int> index) {
     if (index.length == rank) {
-      if (TensorHelper.isIndexExist(_indicesTable, index)) {
-        return _tensor[TensorHelper.getDataIndex(index, _strides)];
+      var indeceplace = TensorHelper.getDataIndex(index, _strides);
+
+      if (indeceplace < size) {
+        return _tensor[
+            TensorHelper.getDataIndex(_indicesTable[indeceplace], _strides)];
       } else {
         throw Exception('not exist');
       }
     } else {
       throw Exception('high rank');
+    }
+  }
+
+  T getIndiceFromTable(int i) {
+    if (i < size) {
+      return _tensor[TensorHelper.getDataIndex(_indicesTable[i], _strides)];
+    } else {
+      throw Exception('out of range');
+    }
+  }
+
+  Tensor<T> transpose() {
+    if (rank == 1) {
+      return this;
+    } else if (rank == 2) {
+      //matrix transposation;
+    } else {
+      //
     }
   }
 }
