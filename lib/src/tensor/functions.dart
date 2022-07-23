@@ -1,5 +1,5 @@
-import 'package:dart_ml/tensor/tensor.dart';
-import 'package:dart_ml/tensor/tensor_helper.dart';
+import 'package:dart_ml/src/tensor/tensor.dart';
+import 'package:dart_ml/src/tensor/tensor_helper.dart';
 
 Tensor dot<T extends num>(dynamic op1, dynamic op2) {
   Tensor t1;

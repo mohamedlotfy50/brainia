@@ -1,4 +1,4 @@
-import 'package:dart_ml/tensor/tensor.dart';
+import 'package:dart_ml/src/tensor/tensor.dart';
 
 class TensorHelper<T> {
   static int initSize(List<int> shape) {
@@ -90,12 +90,11 @@ class TensorHelper<T> {
 
   static void addAtIndex(List operationList, List<int> indices, dynamic data) {
     dynamic current = operationList;
-    var last = indices.removeLast();
-    for (var d in indices) {
-      current = current[d];
+    var last = indices.last;
+    for (var i = 0; i < indices.length - 1; i++) {
+      current = current[indices[i]];
     }
     current[last] = data;
-    indices.add(last);
   }
 
   static List createFromShape(List<int> datashape,
@@ -133,7 +132,7 @@ class TensorHelper<T> {
     if (matrix.first is! List) {
       var temp = <List<int>>[];
       for (var i = 0; i < matrix.length; i++) {
-        var ind = List<int>.from(indeces);
+        var ind = List<int>.from(indeces, growable: true);
         ind.add(i);
 
         temp.add(ind);

@@ -1,4 +1,4 @@
-import 'package:dart_ml/tensor/tensor_helper.dart';
+import 'package:dart_ml/src/tensor/tensor_helper.dart';
 import 'package:test/test.dart';
 
 void main() {

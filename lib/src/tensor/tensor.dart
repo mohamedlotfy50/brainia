@@ -1,4 +1,4 @@
-import 'package:dart_ml/tensor/tensor_helper.dart';
+import 'package:dart_ml/src/tensor/tensor_helper.dart';
 import 'dart:math' as math;
 
 class Tensor<T extends num> {
@@ -13,10 +13,10 @@ class Tensor<T extends num> {
       return _tensor.first;
     } else {
       var output = TensorHelper.createFromShape(_shape);
-
+      var indeces = TensorHelper.createIndicesTable(output, _shape, []);
       for (var i = 0; i < _size; i++) {
-        var dataIndex = TensorHelper.dataIndex(_indicesTable[i], strides);
-        TensorHelper.addAtIndex(output, _indicesTable[i], _tensor[dataIndex]);
+        TensorHelper.addAtIndex(
+            output, indeces[i], getElemetAt(_indicesTable[i]));
       }
       return output;
     }
@@ -121,6 +121,7 @@ class Tensor<T extends num> {
     );
   }
   void reshape(List<int> newShape) {
+    //TODO:fix reshaping to reshape with new indices
     var newSize = TensorHelper.initSize(newShape);
     if (newSize != _size) {
       throw Exception('exception');
@@ -186,7 +187,6 @@ class Tensor<T extends num> {
       opt = copy();
       t = other;
     }
-    print(TensorHelper.isBroadcastable(t.shape, opt.shape));
     if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
       for (var i = 0; i < opt.size; i++) {
         var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
@@ -297,14 +297,7 @@ class Tensor<T extends num> {
 
   T getElemetAt(List<int> index) {
     if (index.length == rank) {
-      var indeceplace = TensorHelper.getDataIndex(index, _strides);
-
-      if (indeceplace < size) {
-        return _tensor[
-            TensorHelper.getDataIndex(_indicesTable[indeceplace], _strides)];
-      } else {
-        throw Exception('not exist');
-      }
+      return _tensor[TensorHelper.getDataIndex(index, strides)];
     } else {
       throw Exception('high rank');
     }
@@ -322,9 +315,26 @@ class Tensor<T extends num> {
     if (rank == 1) {
       return this;
     } else if (rank == 2) {
-      //matrix transposation;
+      var newIndicesTable = <List<int>>[];
+
+      var currentIndex = 0;
+      var currentdim = 0;
+
+      for (var i = 0; i < size; i++) {
+        newIndicesTable
+            .add(_indicesTable[currentIndex + strides.first * currentdim]);
+        currentdim += 1;
+        if (currentdim == shape.first) {
+          currentIndex += 1;
+          currentdim = 0;
+        }
+      }
+      _indicesTable = newIndicesTable;
+
+      _shape = [shape.last, shape.first];
+      return this;
     } else {
-      //
+      // add nd transpose
     }
   }
 }
