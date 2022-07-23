@@ -121,16 +121,12 @@ class Tensor<T extends num> {
     );
   }
   void reshape(List<int> newShape) {
-    //TODO:fix reshaping to reshape with new indices
     var newSize = TensorHelper.initSize(newShape);
     if (newSize != _size) {
       throw Exception('exception');
     } else {
-      var newData = TensorHelper.createFromShape(newShape);
       _shape = newShape;
-
       _strides = TensorHelper.initStride(newShape);
-      _indicesTable = TensorHelper.createIndicesTable(newData, newShape, []);
     }
   }
 
