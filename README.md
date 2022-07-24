@@ -9,7 +9,7 @@ An end-to-end open source platform for machine learning.
  -  Flexible ecosystem to build and deploy ML-powered applications.
  -  Easy to use visualization libraries
  
-`BBrain` inspired by NumPy, the Python array programming library. Adaptors for existing data structures to be plugged into our expression system can easily be written,and Pytourch the open source machine learning framework based on the Torch library
+`BBrain` inspired by NumPy, the Python array programming library. Adaptors for existing data structures to be plugged into our expression system can easily be written,and Pytorch the open source machine learning framework based on the Torch library
 
 ## Usage
 
