@@ -204,7 +204,7 @@ class TensorHelper<T> {
   }
 
   static Tensor vectorProduct(Tensor t1, Tensor t2) {
-    var total = 0;
+    num total = 0;
     for (var i = 0; i < t1.size; i++) {
       total += t1.getElemetAt([i]) * t2.getElemetAt([i]);
     }
@@ -242,12 +242,11 @@ class TensorHelper<T> {
     var output = [];
     var newShape = List<int>.from(t1.shape);
     newShape.removeLast();
-    var loops = newShape.first * newShape.last;
+
     var start = 0;
 
-    for (var i = 0; i < loops; i++) {
-      var result = 0;
-
+    while (start < t1.size) {
+      num result = 0;
       for (var j = 0; j < t2.size; j++) {
         result += t1.getIndiceFromTable(start) * t2.getIndiceFromTable(j);
         start += 1;

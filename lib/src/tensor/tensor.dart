@@ -158,13 +158,11 @@ class Tensor<T extends num> {
       opt = copy();
       t = other;
     }
-    print(TensorHelper.isBroadcastable(t.shape, opt.shape));
     if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
       for (var i = 0; i < opt.size; i++) {
         var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
-        opt._tensor[index] = opt._tensor[index] +
-            t._tensor[TensorHelper.dataIndex(
-                t._indicesTable[i % t.strides.first], t._strides)];
+        opt._tensor[index] =
+            opt._tensor[index] + t.getIndiceFromTable(i & t.shape.last);
       }
       return opt;
     } else {
