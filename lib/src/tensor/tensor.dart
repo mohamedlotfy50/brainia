@@ -120,6 +120,26 @@ class Tensor<T extends num> {
       indicesTable,
     );
   }
+  factory Tensor.randn(List<int> shape) {
+    double randonNegative() {
+      return math.Random.secure().nextDouble() *
+          (math.Random.secure().nextBool() ? 1 : -1);
+    }
+
+    var data = TensorHelper.createFromShape(shape, onGenerated: randonNegative);
+    var dataSize = TensorHelper.initSize(shape);
+    var matrix = TensorHelper.rowMajor<T>(data, shape);
+    var dataStrides = TensorHelper.initStride(shape);
+    var indicesTable = TensorHelper.createIndicesTable(data, shape, []);
+
+    return Tensor._(
+      matrix,
+      shape,
+      dataSize,
+      dataStrides,
+      indicesTable,
+    );
+  }
   void reshape(List<int> newShape) {
     var newSize = TensorHelper.initSize(newShape);
     if (newSize != _size) {
