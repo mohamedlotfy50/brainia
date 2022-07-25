@@ -217,12 +217,12 @@ class TensorHelper<T> {
     var newShape = [t1.shape.first, t2.shape.last];
     var row = 0;
     var column = 0;
-
     while (row < t1.shape.first) {
-      var result = 0;
+      num result = 0;
 
       for (var j = 0; j < t1.shape.last; j++) {
-        var product = t1.getElemetAt([row, j]) * t2.getElemetAt([j, column]);
+        var product = t1.getIndiceFromTable(j + row * t1.shape.last) *
+            t2.getIndiceFromTable(column + j * t2.shape.last);
 
         result += product;
       }

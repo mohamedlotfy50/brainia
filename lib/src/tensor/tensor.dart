@@ -125,8 +125,11 @@ class Tensor<T extends num> {
     if (newSize != _size) {
       throw Exception('exception');
     } else {
-      _shape = newShape;
+      _shape = List.from(newShape);
+      var _matrix = TensorHelper.createFromShape(_shape);
+
       _strides = TensorHelper.initStride(newShape);
+      _indicesTable = TensorHelper.createIndicesTable(_matrix, _shape, []);
     }
   }
 
@@ -158,6 +161,7 @@ class Tensor<T extends num> {
       opt = copy();
       t = other;
     }
+
     if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
       for (var i = 0; i < opt.size; i++) {
         var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
@@ -321,8 +325,8 @@ class Tensor<T extends num> {
         }
       }
       _indicesTable = newIndicesTable;
-
       _shape = [shape.last, shape.first];
+
       return this;
     } else {
       // add nd transpose
