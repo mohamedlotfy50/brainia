@@ -3,6 +3,7 @@
 .packages
 .history
 .vscode/
+notes.txt
 
 # Conventional directory for build outputs
 build/

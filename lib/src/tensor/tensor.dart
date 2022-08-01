@@ -312,7 +312,7 @@ class Tensor<T extends num> {
 
   T getElemetAt(List<int> index) {
     if (index.length == rank) {
-      return _tensor[TensorHelper.getDataIndex(index, strides)];
+      return _tensor[TensorHelper.getDataIndex(index, _strides)];
     } else {
       throw Exception('high rank');
     }

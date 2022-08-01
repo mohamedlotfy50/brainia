@@ -169,7 +169,6 @@ class TensorHelper<T> {
     if (indice.length != strides.length) {
       throw Exception('unexpected erro');
     }
-
     var total = 0;
     for (var i = indice.length - 1; i >= 0; i--) {
       total += strides[i] * indice[i];
@@ -255,5 +254,29 @@ class TensorHelper<T> {
     }
 
     return Tensor(output)..reshape(newShape);
+  }
+
+  static Tensor<T> toTensor<T extends num>(dynamic input) {
+    Tensor t1;
+    if (input is! Tensor) {
+      t1 = Tensor(input);
+    } else {
+      t1 = input;
+    }
+    return t1;
+  }
+
+  static void addToShape(List<int> addedShape, List<int> shape,
+      {int amount = 1}) {
+    for (var i = shape.length - 1; i >= 0; i--) {
+      var s1 = addedShape[i];
+      var s2 = shape[i];
+      if (s1 == s2 - 1) {
+        addedShape[i] = 0;
+      } else {
+        addedShape[i] = s1 + amount;
+        break;
+      }
+    }
   }
 }
