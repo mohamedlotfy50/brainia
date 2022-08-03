@@ -174,21 +174,28 @@ class Tensor<T extends num> {
     Tensor<T> t;
     Tensor opt;
 
-    if (other.size > _size) {
+    var secondIsBigger = other.size > _size;
+
+    if (secondIsBigger) {
       opt = other.copy();
-      t = this;
+      t = copy();
     } else {
       opt = copy();
-      t = other;
+      t = other.copy();
     }
+    var broadcast = TensorHelper.isBroadcastable(opt.shape, t.shape);
 
-    if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
+    if (broadcast != null) {
+      t.reshape(broadcast);
+      var output = <T>[];
+      var currentIndex = List<int>.filled(opt.shape.length, 0);
       for (var i = 0; i < opt.size; i++) {
-        var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
-        opt._tensor[index] =
-            opt._tensor[index] + t.getIndiceFromTable(i % t.shape.last);
+        var sum = opt.getElemetAt(currentIndex) +
+            t.getElemetAt(TensorHelper.shapeMode(currentIndex, t.shape));
+        output.add(sum);
+        TensorHelper.addToShape(currentIndex, opt.shape);
       }
-      return opt;
+      return Tensor(output)..reshape(opt.shape);
     } else {
       throw Exception('unbroadcastable shapes');
     }
@@ -198,20 +205,38 @@ class Tensor<T extends num> {
     Tensor<T> t;
     Tensor opt;
 
-    if (other.size > _size) {
+    var secondIsBigger = other.size > _size;
+
+    if (secondIsBigger) {
       opt = other.copy();
-      t = this;
+      t = copy();
     } else {
       opt = copy();
-      t = other;
+      t = other.copy();
     }
-    if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
-      for (var i = 0; i < opt.size; i++) {
-        var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
-        opt._tensor[index] =
-            opt._tensor[index] - t.getIndiceFromTable(i % t.shape.last);
+    var broadcast = TensorHelper.isBroadcastable(opt.shape, t.shape);
+
+    if (broadcast != null) {
+      t.reshape(broadcast);
+      var output = <T>[];
+      var currentIndex = List<int>.filled(opt.shape.length, 0);
+      if (secondIsBigger) {
+        for (var i = 0; i < opt.size; i++) {
+          var sub =
+              t.getElemetAt(TensorHelper.shapeMode(currentIndex, t.shape)) -
+                  opt.getElemetAt(currentIndex);
+          output.add(sub);
+          TensorHelper.addToShape(currentIndex, opt.shape);
+        }
+      } else {
+        for (var i = 0; i < opt.size; i++) {
+          var sub = opt.getElemetAt(currentIndex) -
+              t.getElemetAt(TensorHelper.shapeMode(currentIndex, t.shape));
+          output.add(sub);
+          TensorHelper.addToShape(currentIndex, opt.shape);
+        }
       }
-      return opt;
+      return Tensor(output)..reshape(opt.shape);
     } else {
       throw Exception('unbroadcastable shapes');
     }
@@ -221,21 +246,28 @@ class Tensor<T extends num> {
     Tensor<T> t;
     Tensor opt;
 
-    if (other.size > _size) {
+    var secondIsBigger = other.size > _size;
+
+    if (secondIsBigger) {
       opt = other.copy();
-      t = this;
+      t = copy();
     } else {
       opt = copy();
-      t = other;
+      t = other.copy();
     }
-    print(TensorHelper.isBroadcastable(t.shape, opt.shape));
-    if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
+    var broadcast = TensorHelper.isBroadcastable(opt.shape, t.shape);
+
+    if (broadcast != null) {
+      t.reshape(broadcast);
+      var output = <T>[];
+      var currentIndex = List<int>.filled(opt.shape.length, 0);
       for (var i = 0; i < opt.size; i++) {
-        var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
-        opt._tensor[index] =
-            opt._tensor[index] * t.getIndiceFromTable(i % t.shape.last);
+        var product = opt.getElemetAt(currentIndex) *
+            t.getElemetAt(TensorHelper.shapeMode(currentIndex, t.shape));
+        output.add(product);
+        TensorHelper.addToShape(currentIndex, opt.shape);
       }
-      return opt;
+      return Tensor(output)..reshape(opt.shape);
     } else {
       throw Exception('unbroadcastable shapes');
     }
@@ -245,21 +277,38 @@ class Tensor<T extends num> {
     Tensor<T> t;
     Tensor opt;
 
-    if (other.size > _size) {
+    var secondIsBigger = other.size > _size;
+
+    if (secondIsBigger) {
       opt = other.copy();
-      t = this;
+      t = copy();
     } else {
       opt = copy();
-      t = other;
+      t = other.copy();
     }
-    print(TensorHelper.isBroadcastable(t.shape, opt.shape));
-    if (TensorHelper.isBroadcastable(t.shape, opt.shape)) {
-      for (var i = 0; i < opt.size; i++) {
-        var index = TensorHelper.dataIndex(opt._indicesTable[i], opt._strides);
-        opt._tensor[index] =
-            opt._tensor[index] / t.getIndiceFromTable(i % t.shape.last);
+    var broadcast = TensorHelper.isBroadcastable(opt.shape, t.shape);
+
+    if (broadcast != null) {
+      t.reshape(broadcast);
+      var output = <double>[];
+      var currentIndex = List<int>.filled(opt.shape.length, 0);
+      if (secondIsBigger) {
+        for (var i = 0; i < opt.size; i++) {
+          var divded =
+              t.getElemetAt(TensorHelper.shapeMode(currentIndex, t.shape)) /
+                  opt.getElemetAt(currentIndex);
+          output.add(divded);
+          TensorHelper.addToShape(currentIndex, opt.shape);
+        }
+      } else {
+        for (var i = 0; i < opt.size; i++) {
+          var divded = opt.getElemetAt(currentIndex) /
+              t.getElemetAt(TensorHelper.shapeMode(currentIndex, t.shape));
+          output.add(divded);
+          TensorHelper.addToShape(currentIndex, opt.shape);
+        }
       }
-      return opt;
+      return Tensor(output)..reshape(opt.shape);
     } else {
       throw Exception('unbroadcastable shapes');
     }

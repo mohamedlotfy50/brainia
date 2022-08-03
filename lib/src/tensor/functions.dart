@@ -45,7 +45,8 @@ Tensor<T> maximum<T extends num>(dynamic input1, dynamic input2) {
     t2 = temp;
   }
   var output = <num>[];
-  if (TensorHelper.isBroadcastable(t1.shape, t2.shape)) {
+  var broadcast = TensorHelper.isBroadcastable(t1.shape, t2.shape);
+  if (broadcast != null) {
     for (var i = 0; i < t1.size; i++) {
       var t1Val = t1.getIndiceFromTable(i);
       var t2Val = t2.getIndiceFromTable(i % t2.size);
@@ -78,7 +79,6 @@ Tensor exp(dynamic input) {
   var t1 = TensorHelper.toTensor(input);
 
   var output = <num>[];
-
   for (var i = 0; i < t1.size; i++) {
     var t1Val = t1.getIndiceFromTable(i);
     output.add(math.pow(math.e, t1Val));

@@ -11,6 +11,14 @@ class TensorHelper<T> {
     return size;
   }
 
+  static List<int> shapeMode(List<int> index, List<int> shape) {
+    var currentIndex = List<int>.from(index);
+    for (var i = 0; i < shape.length; i++) {
+      currentIndex[i] %= shape[i];
+    }
+    return currentIndex;
+  }
+
   static bool isIndexExist(List<List<int>> indices, List<int> index) {
     for (var i = 0; i < indices.length; i++) {
       var found = true;
@@ -176,30 +184,32 @@ class TensorHelper<T> {
     return total;
   }
 
-  static bool isBroadcastable(List<int> shape1, List shape2) {
-    List<int> biggerLength;
-    List<int> smallerLength;
-    if (shape1.length > shape2.length) {
-      biggerLength = List.from(shape1, growable: false);
-      smallerLength = List.from(shape2);
+  static List<int> isBroadcastable(List<int> shape1, List<int> shape2) {
+    List<int> biggerShape, smallerShape;
+    if (shape2.length > shape1.length) {
+      biggerShape = List.from(shape2);
+      smallerShape = List.from(shape1);
     } else {
-      biggerLength = List.from(shape2, growable: false);
-      smallerLength = List.from(shape1);
-    }
-    var diff = biggerLength.length - smallerLength.length;
-    for (var i = 0; i < diff; i++) {
-      smallerLength.insert(0, 1);
+      biggerShape = List.from(shape1);
+      smallerShape = List.from(shape2);
     }
 
-    for (var i = 0; i < biggerLength.length; i++) {
-      if (biggerLength[i] != smallerLength[i]) {
-        if (biggerLength[i] != 1 && smallerLength[i] != 1) {
-          return false;
+    var diff = biggerShape.length - smallerShape.length;
+    for (var i = 0; i < diff; i++) {
+      smallerShape.insert(0, 1);
+    }
+
+    for (var i = 0; i < biggerShape.length; i++) {
+      var bi = biggerShape[i];
+      var si = smallerShape[i];
+      if (bi != si) {
+        if (bi != 1 && si != 1) {
+          return null;
         }
       }
     }
 
-    return true;
+    return smallerShape;
   }
 
   static Tensor vectorProduct(Tensor t1, Tensor t2) {
