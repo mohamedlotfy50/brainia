@@ -140,7 +140,7 @@ class Tensor<T extends num> {
       indicesTable,
     );
   }
-  void reshape(List<int> newShape) {
+  Tensor<T> reshape(List<int> newShape) {
     var newSize = TensorHelper.initSize(newShape);
     if (newSize != _size) {
       throw Exception('exception');
@@ -150,10 +150,11 @@ class Tensor<T extends num> {
 
       _strides = TensorHelper.initStride(newShape);
       _indicesTable = TensorHelper.createIndicesTable(_matrix, _shape, []);
+      return this;
     }
   }
 
-  factory Tensor.arrange(int index) {
+  factory Tensor.arange(int index) {
     var dataShape = [index];
     var data = List.generate(index, (i) => i);
     var dataSize = TensorHelper.initSize(dataShape);

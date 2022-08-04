@@ -72,7 +72,12 @@ Tensor log(dynamic input) {
     var t1Val = t1.getIndiceFromTable(i);
     output.add(math.log(t1Val));
   }
-  return Tensor(output)..reshape(t1.shape);
+  var tensor = Tensor(output);
+  if (t1.shape.isNotEmpty) {
+    tensor.reshape(t1.shape);
+  }
+
+  return tensor;
 }
 
 Tensor exp(dynamic input) {
@@ -83,7 +88,64 @@ Tensor exp(dynamic input) {
     var t1Val = t1.getIndiceFromTable(i);
     output.add(math.pow(math.e, t1Val));
   }
-  return Tensor(output)..reshape(t1.shape);
+  var tensor = Tensor(output);
+  if (t1.shape.isNotEmpty) {
+    tensor.reshape(t1.shape);
+  }
+
+  return tensor;
+}
+
+Tensor cos(dynamic input) {
+  var t1 = TensorHelper.toTensor(input);
+
+  var output = <num>[];
+  for (var i = 0; i < t1.size; i++) {
+    var t1Val = t1.getIndiceFromTable(i);
+    output.add(math.cos(
+      t1Val,
+    ));
+  }
+  var tensor = Tensor(output);
+  if (t1.shape.isNotEmpty) {
+    tensor.reshape(t1.shape);
+  }
+
+  return tensor;
+}
+
+Tensor sin(dynamic input) {
+  var t1 = TensorHelper.toTensor(input);
+
+  var output = <num>[];
+  for (var i = 0; i < t1.size; i++) {
+    var t1Val = t1.getIndiceFromTable(i);
+    output.add(math.sin(
+      t1Val,
+    ));
+  }
+  var tensor = Tensor(output);
+  if (t1.shape.isNotEmpty) {
+    tensor.reshape(t1.shape);
+  }
+
+  return tensor;
+}
+
+Tensor<T> linspace<T extends num>(num start, num end,
+    {int number = 50, endpoint = true}) {
+  var output = [];
+  num delta;
+  if (endpoint) {
+    delta = (end - start) / (number - 1);
+  } else {
+    delta = (end - start) / number;
+  }
+
+  for (var i = 0; i < number; i++) {
+    output.add(start + i * delta);
+  }
+  return Tensor<T>(output);
 }
 
 Tensor max(dynamic input, {int axis, bool keepDims = false}) {
@@ -156,6 +218,112 @@ Tensor sum(dynamic input, {int axis, bool keepDims = false}) {
     if (keepDims == true) {
       newShape.insert(axis, 1);
     }
+    return Tensor(output)..reshape(newShape);
+  } else {
+    throw Exception('dim error');
+  }
+}
+
+Tensor clip(dynamic input, num min, num max) {
+  var t1 = TensorHelper.toTensor(input);
+
+  var output = <num>[];
+  for (var i = 0; i < t1.size; i++) {
+    var t1Val = t1.getIndiceFromTable(i);
+    num val;
+    if (min > max) {
+      val = max;
+    } else if (t1Val > max) {
+      val = max;
+    } else if (t1Val < min) {
+      val = min;
+    } else {
+      val = t1Val;
+    }
+    output.add(val);
+  }
+  var tensor = Tensor(output);
+  if (t1.shape.isNotEmpty) {
+    tensor.reshape(t1.shape);
+  }
+
+  return tensor;
+}
+
+Tensor mean(dynamic input, {int axis, bool keepDims = false}) {
+  var t1 = TensorHelper.toTensor(input);
+
+  if (axis == null) {
+    num total = 0;
+    for (var i = 0; i < t1.size; i++) {
+      total += t1.getIndiceFromTable(i);
+    }
+    return Tensor(total / t1.size);
+  } else if (axis <= t1.rank) {
+    var newShape = List<int>.from(t1.shape);
+    var breakingPoint = newShape.removeAt(axis);
+    var currentShape = List<int>.filled(newShape.length, 0);
+    var size = TensorHelper.initSize(newShape);
+    var output = <num>[];
+
+    for (var t = 0; t < size; t++) {
+      num total = 0;
+      for (var i = 0; i < breakingPoint; i++) {
+        var location = List<int>.from(currentShape, growable: true);
+        location.insert(axis, i);
+        total += t1.getElemetAt(location);
+      }
+      output.add(total / breakingPoint);
+      TensorHelper.addToShape(currentShape, newShape);
+    }
+    if (keepDims == true) {
+      newShape.insert(axis, 1);
+    }
+    return Tensor(output)..reshape(newShape);
+  } else {
+    throw Exception('dim error');
+  }
+}
+
+Tensor argmax(dynamic input, {int axis}) {
+  var t1 = TensorHelper.toTensor(input);
+
+  if (axis == null) {
+    num max = 0;
+    var index = 0;
+
+    for (var i = 0; i < t1.size; i++) {
+      var val = t1.getIndiceFromTable(i);
+      if (val > max) {
+        max = val;
+        index = i;
+      }
+    }
+    return Tensor(index);
+  } else if (axis <= t1.rank) {
+    var newShape = List<int>.from(t1.shape);
+    var breakingPoint = newShape.removeAt(axis);
+    var currentShape = List<int>.filled(newShape.length, 0);
+    var size = TensorHelper.initSize(newShape);
+    var output = <num>[];
+
+    for (var t = 0; t < size; t++) {
+      num max = 0;
+      var index = 0;
+      for (var i = 0; i < breakingPoint; i++) {
+        var location = List<int>.from(currentShape, growable: true);
+        location.insert(axis, i);
+        var val = t1.getElemetAt(location);
+        if (val > max) {
+          max = val;
+
+          index = i;
+        }
+      }
+      output.add(index);
+      TensorHelper.addToShape(currentShape, newShape);
+    }
+
     return Tensor(output)..reshape(newShape);
   } else {
     throw Exception('dim error');
