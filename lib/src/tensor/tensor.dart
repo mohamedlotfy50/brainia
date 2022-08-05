@@ -1,6 +1,8 @@
 import 'package:dart_ml/src/tensor/tensor_helper.dart';
 import 'dart:math' as math;
 
+typedef _OnCall = dynamic Function(List arguments);
+
 class Tensor<T extends num> {
   final List<T> _tensor;
   List<int> _shape, _strides;
@@ -169,6 +171,26 @@ class Tensor<T extends num> {
       dataStrides,
       indicesTable,
     );
+  }
+  Tensor<T> getIndex(List other) {
+    var d = data;
+    var output = [];
+    if (other.first is int) {
+      for (var i in other) {
+        output.add(d[i]);
+      }
+    } else if (other.first is List) {
+      for (var i = 0; i < other.first.length; i++) {
+        var current = d;
+        for (var list in other) {
+          current = current[list[i]];
+        }
+        output.add(current);
+      }
+    } else {
+      throw Exception('unsuported char');
+    }
+    return Tensor(output);
   }
 
   Tensor<T> operator +(Tensor other) {
