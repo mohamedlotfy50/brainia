@@ -1,6 +1,6 @@
-import 'package:dart_ml/src/tensor/tensor.dart';
+part of 'tensor.dart';
 
-class TensorHelper<T> {
+class _TensorHelper {
   static int initSize(List<int> shape) {
     var size = 1;
 
@@ -47,7 +47,7 @@ class TensorHelper<T> {
     return index;
   }
 
-  List<int> defaultIndicesTable(int size) {
+  static List<int> defaultIndicesTable(int size) {
     var temp = <int>[];
     for (var i = 0; i < size; i++) {
       temp.add(i);
@@ -56,7 +56,7 @@ class TensorHelper<T> {
   }
 
   static List<int> initStride(List<int> shape) {
-    var temp = List<int>.generate(shape.length, (index) => null);
+    var temp = List<int>.generate(shape.length, (index) => 0);
     var currentStride = 1;
     for (var i = shape.length - 1; i >= 0; i--) {
       temp[i] = currentStride;
@@ -84,7 +84,11 @@ class TensorHelper<T> {
     var temp = <T>[];
     if (data.first is! List) {
       for (var n in data) {
-        temp.add(n);
+        try {
+          temp.add(n);
+        } catch (_) {
+          throw TensorTypeException(n.runtimeType, T);
+        }
       }
     } else {
       var dim = shape.removeAt(0);
@@ -106,14 +110,14 @@ class TensorHelper<T> {
   }
 
   static List createFromShape(List<int> datashape,
-      {dynamic data, double Function() onGenerated}) {
+      {dynamic data, double Function()? onGenerated}) {
     var finalList = [];
 
     if (datashape.length == 1) {
       for (var i = 0; i < datashape.first; i++) {
         dynamic val;
         if (data != null || onGenerated != null) {
-          val = data ?? onGenerated();
+          val = data ?? onGenerated!();
         }
         finalList.add(val);
       }
@@ -145,7 +149,6 @@ class TensorHelper<T> {
 
         temp.add(ind);
       }
-
       return temp;
     } else {
       var dim = shape.removeAt(0);
@@ -156,7 +159,6 @@ class TensorHelper<T> {
       }
       shape.insert(0, dim);
     }
-
     return output;
   }
 
@@ -175,7 +177,8 @@ class TensorHelper<T> {
 
   static int getDataIndex(List<int> indice, List<int> strides) {
     if (indice.length != strides.length) {
-      throw Exception('unexpected erro');
+      print('${indice.length} != ${strides.length}');
+      throw Exception('unexpected error');
     }
     var total = 0;
     for (var i = indice.length - 1; i >= 0; i--) {
@@ -184,7 +187,7 @@ class TensorHelper<T> {
     return total;
   }
 
-  static List<int> isBroadcastable(List<int> shape1, List<int> shape2) {
+  static List<int>? isBroadcastable(List<int> shape1, List<int> shape2) {
     List<int> biggerShape, smallerShape;
     if (shape2.length > shape1.length) {
       biggerShape = List.from(shape2);
@@ -212,70 +215,6 @@ class TensorHelper<T> {
     return smallerShape;
   }
 
-  static Tensor vectorProduct(Tensor t1, Tensor t2) {
-    num total = 0;
-    for (var i = 0; i < t1.size; i++) {
-      total += t1.getElemetAt([i]) * t2.getElemetAt([i]);
-    }
-    return Tensor(total);
-  }
-
-  static Tensor matrixMultiplication(Tensor t1, Tensor t2) {
-    var output = [];
-
-    var newShape = [t1.shape.first, t2.shape.last];
-    var row = 0;
-    var column = 0;
-    while (row < t1.shape.first) {
-      num result = 0;
-
-      for (var j = 0; j < t1.shape.last; j++) {
-        var product = t1.getIndiceFromTable(j + row * t1.shape.last) *
-            t2.getIndiceFromTable(column + j * t2.shape.last);
-
-        result += product;
-      }
-      column += 1;
-
-      if (column == t2.shape.last) {
-        column = 0;
-        row += 1;
-      }
-
-      output.add(result);
-    }
-    return Tensor(output)..reshape(newShape);
-  }
-
-  static Tensor<T> muliplyOnAxis<T extends num>(Tensor t1, Tensor t2) {
-    var output = [];
-    var newShape = List<int>.from(t1.shape);
-    newShape.removeLast();
-
-    var start = 0;
-
-    while (start < t1.size) {
-      num result = 0;
-      for (var j = 0; j < t2.size; j++) {
-        result += t1.getIndiceFromTable(start) * t2.getIndiceFromTable(j);
-        start += 1;
-      }
-      output.add(result);
-    }
-
-    return Tensor(output)..reshape(newShape);
-  }
-
-  static Tensor<T> toTensor<T extends num>(dynamic input) {
-    Tensor t1;
-    if (input is! Tensor) {
-      t1 = Tensor(input);
-    } else {
-      t1 = input;
-    }
-    return t1;
-  }
-
   static void addToShape(List<int> addedShape, List<int> shape,
       {int amount = 1}) {
     for (var i = shape.length - 1; i >= 0; i--) {
@@ -288,5 +227,31 @@ class TensorHelper<T> {
         break;
       }
     }
+  }
+
+  static Type getType(dynamic data) {
+    var value = data;
+    while (value is List) {
+      value = value.first;
+    }
+
+    return value.runtimeType;
+  }
+
+  static num boolToNum(dynamic value) {
+    num val;
+
+    if (value is bool) {
+      val = value ? 1 : 0;
+    } else if (value is num) {
+      val = value;
+    } else {
+      throw Exception('sdasdasdasdas');
+    }
+    return val;
+  }
+
+  static bool isSupporetdType(dynamic t) {
+    return t is bool || t is String || t is num || t is List;
   }
 }
