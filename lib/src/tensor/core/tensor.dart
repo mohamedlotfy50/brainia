@@ -107,439 +107,70 @@ class Tensor<T> {
     return _tensor[_TensorHelper.getDataIndex(location, _strides)];
   }
 
+  Tensor<T> getAtT(List<int> index) {
+    var _indexSize = index.length;
+    if (_indexSize > rank) {
+      throw Exception('');
+    }
+    var newShape = List<int>.from(_shape);
+    var start = 0;
+    var end = 0;
+    for (var i = 0; i < _indexSize; i++) {}
+
+    var output = Tensor<T>(_tensor.sublist(start, end == 0 ? start : end));
+    if (end != 0) {
+      output = output.reshape(newShape);
+    }
+
+    return output;
+  }
+
   Tensor<num> operator +(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('+', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <num>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-
-      var sum = val1 + val2;
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<num>(output)..reshape(opt.shape);
+    return _NumTensor.add<T>(this, other);
   }
 
   Tensor<num> operator -(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('-', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <num>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-      var sum;
-
-      if (secondIsBigger) {
-        sum = val2 - val1;
-      } else {
-        sum = val1 - val2;
-      }
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<num>(output)..reshape(opt.shape);
+    return _NumTensor.subtract<T>(this, other);
   }
 
   Tensor<num> operator *(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('*', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <num>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-
-      var sum = val1 * val2;
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<num>(output)..reshape(opt.shape);
+    return _NumTensor.multiply<T>(this, other);
   }
 
   Tensor<num> operator /(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('/', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <num>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-      var sum;
-
-      if (secondIsBigger) {
-        sum = val2 / val1;
-      } else {
-        sum = val1 / val2;
-      }
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<num>(output)..reshape(opt.shape);
+    return _NumTensor.divid<T>(this, other);
   }
 
   Tensor<bool> operator |(Tensor<T> other) {
-    Tensor<T> t;
-    Tensor<T> opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! bool) {
-      throw OperationError('|', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-
-      var sum = (val1 as bool) | (val2 as bool);
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+    return _BoolTensor.or<T>(this, other);
   }
 
   Tensor<bool> operator &(Tensor<T> other) {
-    Tensor<T> t;
-    Tensor<T> opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is bool) {
-      throw OperationError('&', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-
-      var sum = (val1 as bool) & (val2 as bool);
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+    return _BoolTensor.and<T>(this, other);
   }
 
   Tensor<bool> operator ^(Tensor<T> other) {
-    Tensor<T> t;
-    Tensor<T> opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! bool) {
-      throw OperationError('^', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-
-      var sum = (val1 as bool) ^ (val2 as bool);
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+    return _BoolTensor.xor<T>(this, other);
   }
 
   Tensor<bool> operator ~() {
-    var output = <bool>[];
-
-    if (T is! bool) {
-      throw OperationError('~', T);
-    }
-    for (var i = 0; i < _size; i++) {
-      output.add(_indicesTable[i] as bool);
-    }
-
-    return Tensor<bool>(output)..reshape(_shape);
+    return _BoolTensor.bitwise<T>(this);
   }
 
   Tensor<bool> operator >(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('>', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-      var sum;
-      if (secondIsBigger) {
-        sum = val1 < val2;
-      } else {
-        sum = val1 > val2;
-      }
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+    return _NumTensor.greaterThan<T>(this, other);
   }
 
-  Tensor<bool> operator >=(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('>=', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-      var sum;
-      if (secondIsBigger) {
-        sum = val1 <= val2;
-      } else {
-        sum = val1 >= val2;
-      }
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+  Tensor<bool> operator >=(Tensor<bool> other) {
+    return _NumTensor.greaterOrEqual<T>(this, other);
   }
 
-  Tensor<bool> operator <(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
-    }
-    if (other is! num) {
-      throw OperationError('<', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-      var sum;
-      if (secondIsBigger) {
-        sum = val1 > val2;
-      } else {
-        sum = val1 < val2;
-      }
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+  Tensor<bool> operator <(Tensor<bool> other) {
+    return _NumTensor.smaller<T>(this, other);
   }
 
-  Tensor<bool> operator <=(Tensor other) {
-    Tensor t;
-    Tensor opt;
-
-    var secondIsBigger = other.size > _size;
-
-    if (secondIsBigger) {
-      opt = other.copy();
-      t = copy();
-    } else {
-      opt = copy();
-      t = other.copy();
-    }
-    var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
-
-    if (broadcast == null) {
-      throw Exception('unbroadcastable shapes');
-    }
-    if (other is! num) {
-      throw OperationError('<=', T, other.runtimeType);
-    }
-    t.reshape(broadcast);
-    var output = <bool>[];
-    var currentIndex = List<int>.filled(opt.shape.length, 0);
-    for (var i = 0; i < opt.size; i++) {
-      final val1 = opt.getAt(currentIndex);
-      final val2 = t.getAt(_TensorHelper.shapeMode(currentIndex, t.shape));
-      var sum;
-      if (secondIsBigger) {
-        sum = val1 >= val2;
-      } else {
-        sum = val1 <= val2;
-      }
-
-      output.add(sum);
-      _TensorHelper.addToShape(currentIndex, opt.shape);
-    }
-    return Tensor<bool>(output)..reshape(opt.shape);
+  Tensor<bool> operator <=(Tensor<bool> other) {
+    return _NumTensor.smallerOrEqual<T>(this, other);
   }
 
   @override
@@ -568,7 +199,7 @@ class Tensor<T> {
     } else {
       var start = List<int>.filled(rank, 0);
       var newShape = List<int>.from(_shape.reversed);
-      List<T> output = [];
+      var output = <T>[];
       for (var i = 0; i < _size; i++) {
         output.add(getAt(List<int>.from(start.reversed)));
         _TensorHelper.addToShape(start, newShape);
