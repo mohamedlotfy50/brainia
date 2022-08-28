@@ -1,12 +1,10 @@
-import 'package:dart_ml/src/tensor/core/tensor.dart';
-import 'package:dart_ml/src/tensor/functions/dotproduct.dart';
-import 'package:dart_ml/src/tensor/random/rand.dart';
+import '../lib/src/tensor/core/tensor.dart' as ts;
 
 void main(List<String> arguments) {
-  Tensor t = Tensor<int>([1, 2, 3]);
-  Tensor t2 = Tensor<int>([
+  var t = ts.Tensor<int>([1, 2, 3]);
+  var t2 = ts.Tensor<int>([
     [1, 2, 3],
     [4, 5, 6]
   ]);
-  print(t2.getAtT([0, 2]).data);
+  print(ts.sum(t).data);
 }

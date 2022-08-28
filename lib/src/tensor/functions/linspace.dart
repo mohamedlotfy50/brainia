@@ -1,4 +1,4 @@
-import 'package:dart_ml/src/tensor/core/tensor.dart';
+part of '../core/tensor.dart';
 
 Tensor<T> linspace<T extends num>(num start, num end,
     {int number = 50, endpoint = true}) {

@@ -30,7 +30,7 @@ class _BoolTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! bool) {
       throw OperationError('^', T, t2.runtimeType);
@@ -66,7 +66,7 @@ class _BoolTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is bool) {
       throw OperationError('&', T, t2.runtimeType);
@@ -102,7 +102,7 @@ class _BoolTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! bool) {
       throw OperationError('|', T, t2.runtimeType);

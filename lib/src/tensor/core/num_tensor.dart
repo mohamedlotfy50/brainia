@@ -57,7 +57,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('<', T, t2.runtimeType);
@@ -97,7 +97,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('>=', T, t2.runtimeType);
@@ -137,7 +137,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('>', T, t2.runtimeType);
@@ -177,7 +177,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('+', T, t2.runtimeType);
@@ -213,7 +213,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('-', T, t2.runtimeType);
@@ -254,7 +254,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('*', T, t2.runtimeType);
@@ -290,7 +290,7 @@ class _NumTensor {
     var broadcast = _TensorHelper.isBroadcastable(opt.shape, t.shape);
 
     if (broadcast == null) {
-      throw BroadcastException(opt.shape, t.shape);
+      throw Exception();
     }
     if (t2 is! num) {
       throw OperationError('/', T, t2.runtimeType);

@@ -1,18 +1,17 @@
-import 'package:dart_ml/src/tensor/core/tensor.dart';
-import 'package:dart_ml/src/tensor/functions/tensor_util.dart';
+part of '../core/tensor.dart';
 
 Tensor dot<T extends num>(dynamic op1, dynamic op2) {
-  var t1 = TensorHelper.toTensor(op1), t2 = TensorHelper.toTensor(op2);
+  var t1 = _TensorHelper.toTensor(op1), t2 = _TensorHelper.toTensor(op2);
 
   if (t1.rank == 1 && t2.rank == 1) {
-    if (TensorHelper.shapeEquality(t1.shape, t2.shape)) {
-      return TensorHelper.vectorProduct(t1, t2);
+    if (_TensorHelper.shapeEquality(t1.shape, t2.shape)) {
+      return _TensorHelper.vectorProduct(t1, t2);
     } else {
       throw Exception('dim execption');
     }
   } else if (t1.rank == 2 && t2.rank == 2) {
     if (t1.shape.last == t2.shape.first) {
-      return TensorHelper.matrixMultiplication(t1, t2);
+      return _TensorHelper.matrixMultiplication(t1, t2);
     } else {
       throw Exception('matrix dim execption');
     }
@@ -20,7 +19,7 @@ Tensor dot<T extends num>(dynamic op1, dynamic op2) {
     return t1 * t2;
   } else if (t1.rank >= 2 && t2.rank == 1) {
     if (t1.shape.last == t2.shape.first) {
-      return TensorHelper.muliplyOnAxis(t1, t2);
+      return _TensorHelper.muliplyOnAxis(t1, t2);
     } else {
       throw Exception('matrix dim execption');
     }

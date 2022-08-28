@@ -1,13 +1,25 @@
-import 'package:dart_ml/src/tensor/errors/broadcast_exception.dart';
-import 'package:dart_ml/src/tensor/errors/dynamic_type.dart';
-
-import 'package:dart_ml/src/tensor/errors/tensor_type_exception.dart';
-
 import '../errors/operationError.dart';
+import 'dart:math' as math;
 part 'tensor_helper.dart';
 part 'num_tensor.dart';
 part 'bool_tensor.dart';
 part 'string_tensor.dart';
+part '../creation/arange.dart';
+part '../creation/ones.dart';
+part '../creation/zeroes.dart';
+part '../functions/argmax.dart';
+part '../functions/clip.dart';
+part '../functions/cos.dart';
+part '../functions/dotproduct.dart';
+part '../functions/exp.dart';
+part '../functions/linspace.dart';
+part '../functions/log.dart';
+part '../functions/max.dart';
+part '../functions/maximum.dart';
+part '../functions/mean.dart';
+part '../functions/sin.dart';
+part '../functions/std.dart';
+part '../functions/sum.dart';
 
 class Tensor<T> {
   final List<T> _tensor;
@@ -43,11 +55,11 @@ class Tensor<T> {
 
   factory Tensor(dynamic input) {
     if (!_TensorHelper.isSupporetdType(input)) {
-      throw TensorTypeException(input.runtimeType, List);
+      throw Exception(input.runtimeType);
     }
 
     if (T == dynamic) {
-      throw DynamicTypeException();
+      throw Exception();
     }
     if (input is! List) {
       input = [input];
