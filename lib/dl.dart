@@ -1,2 +1,2 @@
-export 'model/base_layer.dart';
+export 'model/nn_base.dart';
 export 'core/dl.dart';

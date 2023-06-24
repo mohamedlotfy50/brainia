@@ -1,8 +1,8 @@
-export './dl/conv_1d.dart';
-export './dl/conv_2d.dart';
-export './dl/dense.dart';
-export './dl/relu.dart';
-export './dl/sequencial.dart';
-export './dl/sigmoid.dart';
-export './dl/softmax.dart';
-export './dl/tanh.dart';
+export 'nn/conv_2d.dart';
+export 'nn/linear.dart';
+export 'nn/relu.dart';
+export 'nn/sequencial.dart';
+export 'nn/sigmoid.dart';
+export 'nn/softmax.dart';
+export 'nn/tanh.dart';
+export 'nn/conv_1d.dart';
